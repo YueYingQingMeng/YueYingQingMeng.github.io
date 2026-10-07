@@ -145,6 +145,18 @@ export interface MusicWidget {
 	pages?: SidebarPage[];
 }
 
+/** 友链卡片（紧凑列表，内容来自 src/data/friends.ts） */
+export interface FriendLinksWidget {
+	type: "friendLinks";
+	enable: boolean;
+	slot: SidebarWidgetSlot;
+	column?: SidebarColumn;
+	/** 最多展示条数，省略表示全部 */
+	limit?: number;
+	/** 限定显示的页面，省略或空数组表示所有页面 */
+	pages?: SidebarPage[];
+}
+
 export type SidebarWidget =
 	| ProfileWidget
 	| CategoriesWidget
@@ -154,7 +166,8 @@ export type SidebarWidget =
 	| StatsWidget
 	| CalendarWidget
 	| TocWidget
-	| MusicWidget;
+	| MusicWidget
+	| FriendLinksWidget;
 
 /**
  * 侧栏整体配置。components 渲染顺序 = 数组顺序，top 恒排在 sticky 之前。

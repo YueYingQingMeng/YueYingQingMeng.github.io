@@ -1,0 +1,121 @@
+---
+/**
+ * 侧栏友链卡片（紧凑列表）。
+ *
+ * 数据来自 `src/data/friends.ts`，显隐与位置由 `src/config/sidebarConfig.ts` 控制。
+ * 纯 SSR 输出，不引入任何客户端 JS 与额外网络请求。
+ */
+import { friendsData } from "@/data/friends";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+	/** 由 SideBar 透传的 widget 配置，用于读取 limit */
+	widget?: { limit?: number };
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+const limit = Astro.props.widget?.limit ?? friendsData.length;
+const friends = limit > 0 ? friendsData.slice(0, limit) : friendsData;
+
+/** 取域名用于副标题展示（去掉 www. 前缀） */
+const hostOf = (url: string): string => {
+	try {
+		return new URL(url).hostname.replace(/^www\./, "");
+	} catch {
+		return url;
+	}
+};
+---
+
+{friends.length > 0 && (
+	<WidgetLayout
+		name={i18n(I18nKey.friends)}
+		id="friend-links"
+		class={className}
+		style={style}
+	>
+		<ul class="friend-links">
+			{friends.map((friend) => (
+				<li class="friend-links__item">
+					<a
+						class="friend-links__link m3-state-layer"
+						href={friend.siteurl}
+						target="_blank"
+						rel="noopener noreferrer"
+						title={friend.desc || friend.title}
+					>
+						<img
+							class="friend-links__avatar"
+							src={friend.imgurl}
+							alt=""
+							width="36"
+							height="36"
+							loading="lazy"
+							decoding="async"
+						/>
+						<span class="friend-links__body">
+							<span class="friend-links__title">{friend.title}</span>
+							<span class="friend-links__host">{hostOf(friend.siteurl)}</span>
+						</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</WidgetLayout>
+)}
+
+<style lang="stylus">
+.friend-links
+	list-style: none
+	margin: 0
+	padding: 0
+	display: flex
+	flex-direction: column
+	gap: var(--m3e-space-1)
+
+.friend-links__link
+	position: relative
+	display: flex
+	align-items: center
+	gap: var(--m3e-space-3)
+	padding: var(--m3e-space-2)
+	border-radius: var(--shape-corner-m)
+	text-decoration: none
+	color: var(--on-surface)
+	--m3e-state-color: var(--on-surface)
+	transition: background-color var(--m3e-duration-short) var(--m3e-easing-standard)
+
+.friend-links__avatar
+	width: 2.25rem
+	height: 2.25rem
+	flex-shrink: 0
+	border-radius: var(--shape-corner-full)
+	object-fit: cover
+	background: var(--btn-regular-bg)
+
+.friend-links__body
+	display: flex
+	flex-direction: column
+	flex: 1
+	min-width: 0
+
+.friend-links__title
+	font: var(--m3e-type-label-large)
+	font-weight: 600
+	color: var(--on-surface)
+	white-space: nowrap
+	overflow: hidden
+	text-overflow: ellipsis
+
+.friend-links__host
+	font: var(--m3e-type-body-small)
+	color: var(--on-surface-variant)
+	white-space: nowrap
+	overflow: hidden
+	text-overflow: ellipsis
+</style>

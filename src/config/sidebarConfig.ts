@@ -104,6 +104,7 @@ export const sidebarConfig: SidebarConfig = withUserConfig("sidebar", {
 			pages: ["home", "archive", "categories", "tags"],
 		},
 		{ type: "calendar", enable: true, slot: "top", column: "secondary" },
+		{ type: "friendLinks", enable: true, slot: "top", column: "secondary" },
 		{
 			type: "toc",
 			enable: true,
