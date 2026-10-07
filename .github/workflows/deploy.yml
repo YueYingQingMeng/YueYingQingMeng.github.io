@@ -15,10 +15,12 @@ permissions:
   pages: write
   id-token: write
 
-# 同一时间只允许一条部署流水线，新提交自动取消旧构建。
+# 同一时间只允许一条部署流水线：新提交排队等待，而不是取消正在跑的那条。
+# 这里刻意不用 cancel-in-progress: true —— 被取消的部署会在 Deployments 页面
+# 留下一条红色的 "Failed to deploy" 记录，看着像真出错。
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
