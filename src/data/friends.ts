@@ -21,11 +21,19 @@ export interface FriendItem {
 export const friendsData: FriendItem[] = [
 	{
 		id: 1,
-		title: "恋语官网",
+		title: "予念官网",
 		imgurl: "https://lianyu.chat/favicon.ico",
-		desc: "恋语 LianYu 官方网站",
+		desc: "予念 YuNian 官方网站",
 		siteurl: "https://lianyu.chat",
 		tags: ["官网", "团队"],
+	},
+	{
+		id: 2,
+		title: "BINBIN 的个人博客",
+		imgurl: "https://github.com/BB0813.png?size=96",
+		desc: "Binbim —— AI Full-stack Developer",
+		siteurl: "https://hi.binbim.top/",
+		tags: ["博客", "友链"],
 	},
 ];
 
