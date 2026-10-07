@@ -1,0 +1,64 @@
+@reference "tailwindcss";
+
+/* Page transition animations with Swup */
+html.is-changing .transition-swup-fade {
+    transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1), transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+html.is-animating .transition-swup-fade {
+    opacity: 0;
+    transform: translateY(1rem);
+}
+
+/* Fade-in animations for components */
+@keyframes fade-in-up {
+    0% {
+        transform: translateY(2rem);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Main components */
+.onload-animation {
+    opacity: 0;
+    animation: 300ms fade-in-up;
+    animation-fill-mode: forwards;
+}
+#navbar {
+    animation-delay: 0ms
+}
+#sidebar {
+    animation-delay: 100ms
+}
+#sidebar-secondary {
+    animation-delay: 100ms
+}
+#swup-container {
+    outline: none;
+}
+#content-wrapper {
+    animation-delay: var(--content-delay);
+}
+.footer {
+    animation-delay: 250ms;
+}
+
+/* Post content
+ *
+ * The staggered entry delays this used to set are gone. They were scoped to
+ * `#post-container`, which no longer exists in `src/`, so the rules matched
+ * nothing and article sections animated with the base delay instead.
+ *
+ * Re-anchoring them is not a drop-in fix. `:nth-child()` only reaches direct
+ * children, and of the 11 `.onload-animation` elements inside
+ * `#content-wrapper` only 2 are direct children — the rest sit deeper, so a
+ * re-anchored selector would apply to a different, much smaller set than the
+ * one originally intended, and `#content-wrapper` already sets its own
+ * `animation-delay`, making the first step ambiguous.
+ *
+ * Restoring the stagger means picking the intended element list explicitly
+ * rather than by nth-child. */
+

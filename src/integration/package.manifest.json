@@ -1,0 +1,24 @@
+{
+	"$comment": [
+		"Layout knowledge the npm packaging repo (yCENzh/shirones) needs but that",
+		"only this repository can know. It reads this file rather than restating the",
+		"values, so changing an alias or adding a package-only dependency is a change",
+		"made here, in the same commit as the code that caused it.",
+		"",
+		"`scripts/check-package-manifest.mjs` fails the build when a runtime bare",
+		"import in src/ is covered by none of: `dependencies`, `peerDependencies`,",
+		"`extraDependencies` below, or a tsconfig `paths` alias. That is the",
+		"'anything an injected route imports must be a real dependency' rule,",
+		"enforced at the source instead of at package time."
+	],
+	"extraDependencies": {
+		"esbuild": "^0.27.0 || ^0.28.0",
+		"@iconify-json/simple-icons": "^1.2.93",
+		"@types/hast": "^3.0.5",
+		"@types/mdast": "^4.0.4"
+	},
+	"viteAliases": [
+		"@shirone/iconify-offline",
+		"@shirone/iconify-offline-functions"
+	]
+}

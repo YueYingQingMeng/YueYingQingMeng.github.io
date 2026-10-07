@@ -1,0 +1,40 @@
+# pnpm settings moved out of package.json in pnpm 11: a `pnpm` field there is
+# ignored, which silently disables the override below. Keep security pins in
+# this file, not in package.json.
+#
+# serialize-javascript has had prototype-pollution advisories; pinning the
+# patched release keeps every transitive copy on it, including the ones pulled
+# in by build tooling where we do not control the range.
+overrides:
+  serialize-javascript: 7.0.5
+
+# pnpm treats this file as a workspace root the moment it exists, so a
+# single-package repo has to list itself. Without it every command — even
+# `pnpm root` — fails with "packages field missing or empty".
+packages:
+  - "."
+
+# pnpm 11 rejects any package published within this window, which blocks a
+# freshly-released patch or major from being picked up. Stated explicitly here
+# because it is a pnpm default, not our setting: inheriting it means a pnpm
+# upgrade silently changes which versions install.
+minimumReleaseAge: 1440
+
+# Build-script approval, split across the two key names because the setting moved
+# between pnpm majors: `allowBuilds` is pnpm 11, `onlyBuiltDependencies` is
+# pnpm 10 and earlier. Both are present so a single checkout installs on either.
+#
+# pnpm blocks install scripts by default and fails with ERR_PNPM_IGNORED_BUILDS.
+# An existing node_modules can hide this, because pnpm reuses the build results
+# recorded in the lockfile — a clean install is what surfaces it:
+#   esbuild          downloads its platform binary in postinstall
+#   @parcel/watcher  compiles a native binding
+#   swup             postinstall step of the scroll plugin's dependency
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  swup: true
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - esbuild
+  - swup
