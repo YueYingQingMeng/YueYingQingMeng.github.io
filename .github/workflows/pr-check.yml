@@ -1,0 +1,55 @@
+# PR 校验：每个 PR 自动跑类型检查 + 完整构建。
+#
+# 目的：在合并前发现「依赖升级 / 内容改动弄坏了站点」，避免坏改动直接进 main。
+# 说明：
+# - 只校验，不部署；部署由 deploy.yml 在 push 到 main 之后执行。
+# - Dependabot 的 PR 同样适用（本流程不需要任何 secrets，仅需只读权限）。
+
+name: PR Check
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# 同一个 PR 的多次推送只保留最新一次校验。
+concurrency:
+  group: pr-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Type check & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.28.2
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      # 类型与内容校验，必须 0 errors。
+      - name: Astro check
+        run: pnpm exec astro check
+
+      # 完整生产构建（含 Pagefind 索引与字体预算检查）。
+      - name: Build site
+        run: pnpm build
