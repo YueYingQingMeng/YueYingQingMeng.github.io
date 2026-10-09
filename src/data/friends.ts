@@ -35,6 +35,14 @@ export const friendsData: FriendItem[] = [
 		siteurl: "https://hi.binbim.top/",
 		tags: ["博客", "友链"],
 	},
+	{
+		id: 3,
+		title: "林梓涵的个人博客",
+		imgurl: "https://blog.linzihan.fun/logo/icon.webp",
+		desc: "林梓涵 —— 个人博客",
+		siteurl: "https://blog.linzihan.fun/",
+		tags: ["博客", "友链"],
+	},
 ];
 
 // 获取所有友情链接数据（稳定顺序，测试可复现）
