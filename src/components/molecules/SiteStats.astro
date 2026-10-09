@@ -75,6 +75,7 @@ const rows = [
 		icon: "material-symbols:calendar-month-outline-rounded",
 		label: i18n(I18nKey.statsDays),
 		value: fmt(stats.days),
+		since: stats.startedAt ?? undefined,
 	},
 	{
 		icon: "material-symbols:update-rounded",
@@ -95,6 +96,7 @@ const rows = [
 				<span
 					class="m3-site-stats__value"
 					data-last-update={row.relative ? "" : undefined}
+					data-days-since={row.since ?? undefined}
 					>{row.value}</span
 				>
 			</li>
@@ -138,20 +140,36 @@ const rows = [
 		white-space: nowrap
 </style>
 
-<script is:inline define:vars={{ lastActivityISO: stats.lastActivity, todayText, yesterdayText, daysAgoText }}>
-	// 最近更新相对化：按本地时区取日界，差值恒为整天数；
-	// 无文章或脚本禁用时保留 SSR 的绝对日期
+<script is:inline define:vars={{ lastActivityISO: stats.lastActivity, startedAtISO: stats.startedAt, todayText, yesterdayText, daysAgoText }}>
+	// 页面加载后把构建期数值升级为实时值（按本地时区取日界，差值恒为整天数）；
+	// 无文章或脚本禁用时保留 SSR 的绝对日期 / 构建期天数
 	(() => {
-		const el = document.querySelector("[data-last-update]");
-		if (!el || !lastActivityISO) return;
 		const DAY_MS = 86_400_000;
 		const dayStart = (d) =>
 			new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-		const diffDays = Math.round(
-			(dayStart(new Date()) - dayStart(new Date(lastActivityISO))) / DAY_MS,
-		);
-		if (diffDays <= 0) el.textContent = todayText;
-		else if (diffDays === 1) el.textContent = yesterdayText;
-		else el.textContent = daysAgoText.replace("{days}", String(diffDays));
+
+		// 最近更新 → 今天 / 昨天 / N 天前
+		const el = document.querySelector("[data-last-update]");
+		if (el && lastActivityISO) {
+			const diffDays = Math.round(
+				(dayStart(new Date()) - dayStart(new Date(lastActivityISO))) / DAY_MS,
+			);
+			if (diffDays <= 0) el.textContent = todayText;
+			else if (diffDays === 1) el.textContent = yesterdayText;
+			else el.textContent = daysAgoText.replace("{days}", String(diffDays));
+		}
+
+		// 运行天数 → 从起算日到今天的实时天数
+		const daysEl = document.querySelector("[data-days-since]");
+		const sinceISO = daysEl?.getAttribute("data-days-since");
+		if (daysEl && sinceISO) {
+			const days = Math.max(
+				0,
+				Math.round(
+					(dayStart(new Date()) - dayStart(new Date(sinceISO))) / DAY_MS,
+				),
+			);
+			daysEl.textContent = String(days);
+		}
 	})();
 </script>
